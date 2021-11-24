@@ -1,0 +1,7 @@
+@inproceedings{munkberg2021nvdiffrec,
+title = "{Extracting Triangular 3D Models, Materials, and Lighting From Images}",
+author = {Jacob Munkberg and Jon Hasselgren and Tianchang Shen and Jun Gao and Wenzheng Chen and Alex Evans and Thomas Mueller and Sanja Fidler},
+year = {2021},
+booktitle = {Preprint}
+}
+
