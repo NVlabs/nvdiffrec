@@ -1,0 +1,16 @@
+{
+    "ref_mesh"  : "data/bob/bob_tri.obj",
+    "random_textures": true,
+    "iter": 1000,
+    "save_interval": 100,
+    "texture_res": [ 1024, 1024 ],
+    "train_res": [512, 512],
+    "batch": 4,
+    "learning_rate": [0.03, 0.03],
+    "ks_min" : [0, 0.25, 0],
+    "envmap": "data/irrmaps/aerodynamics_workshop_2k.hdr",
+    "env_scale" : 2.0,
+    "background": "white",
+    "validate" : false,
+    "out_dir": "bob"
+}

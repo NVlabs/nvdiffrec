@@ -1,0 +1,7 @@
+newmtl texturedFacets
+bsdf pbr
+Kd 0.90 0.90 0.90
+Ks 0.00 0.30 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00

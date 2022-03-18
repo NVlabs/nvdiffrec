@@ -1,0 +1,4 @@
+newmtl initialShadingGroup
+bsdf pbr
+Ks 0.0 0.2 1.00
+map_Kd spot_texture.png

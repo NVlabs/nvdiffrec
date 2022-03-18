@@ -1,0 +1,3 @@
+ The Spot model was created and released into the public domain by Keenan Crane.
+
+ http://www.cs.cmu.edu/~kmcrane/Projects/ModelRepository/index.html#spot
