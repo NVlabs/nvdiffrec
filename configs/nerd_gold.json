@@ -1,0 +1,19 @@
+{
+    "ref_mesh": "data/nerd/moldGoldCape_rescaled",
+    "random_textures": true,
+    "iter": 5000,
+    "save_interval": 100,
+    "texture_res": [ 2048, 2048 ],
+    "train_res": [512, 512],
+    "batch": 8,
+    "learning_rate": [0.03, 0.01],
+    "dmtet_grid" : 128,
+    "mesh_scale" : 2.5,
+    "kd_min" : [0.03, 0.03, 0.03],
+    "kd_max" : [0.8, 0.8, 0.8],
+    "ks_min" : [0, 0.08, 0.0],
+    "ks_max" : [0, 1.0, 1.0],
+    "background" : "white",
+    "display" : [{"bsdf":"kd"}, {"bsdf":"ks"}, {"bsdf" : "normal"}],
+    "out_dir": "nerd_gold"
+}

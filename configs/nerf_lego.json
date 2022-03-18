@@ -1,0 +1,17 @@
+{
+    "ref_mesh": "data/nerf_synthetic/lego",
+    "random_textures": true,
+    "iter": 5000,
+    "save_interval": 100,
+    "texture_res": [ 2048, 2048 ],
+    "train_res": [800, 800],
+    "batch": 8,
+    "learning_rate": [0.03, 0.01],
+    "ks_min" : [0, 0.25, 0.0],
+    "dmtet_grid" : 128,
+    "mesh_scale" : 2.4,
+    "laplace_scale" : 3000,
+    "display": [{"latlong" : true}, {"bsdf" : "kd"}, {"bsdf" : "ks"}, {"bsdf" : "normal"}],
+    "background" : "white",
+    "out_dir": "nerf_lego"
+}

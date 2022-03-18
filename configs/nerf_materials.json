@@ -1,0 +1,19 @@
+{
+    "ref_mesh": "data/nerf_synthetic/materials",
+    "random_textures": true,
+    "iter": 5000,
+    "save_interval": 100,
+    "texture_res": [ 2048, 2048 ],
+    "train_res": [800, 800],
+    "batch": 8,
+    "learning_rate": [0.03, 0.003],
+    "ks_min" : [0, 0.1, 0.0],
+    "dmtet_grid" : 128,
+    "mesh_scale" : 2.4,
+    "lock_light" : true,
+    "laplace" : "absolute",
+    "laplace_scale" : 3000,
+    "display": [{"latlong" : true}, {"bsdf" : "kd"}, {"bsdf" : "ks"}, {"bsdf" : "normal"}],
+    "background" : "white",
+    "out_dir": "nerf_materials"
+}
