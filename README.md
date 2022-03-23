@@ -47,24 +47,19 @@ imageio_download_bin freeimage
 *Our approach is designed for high-end NVIDIA GPUs with large amounts of memory.
 To run on mid-range GPU's, reduce the batch size parameter in the .json files.*
 
-Cow from image observations:
-```
-python train.py --config configs/spot.json
-```
-Visualize training progress (only supported on Windows):
-```
-python train.py --config configs/spot.json --display-interval 20
-```
-
 Simple genus 1 reconstruction example:
 ```
 python train.py --config configs/bob.json
+```
+Visualize training progress (only supported on Windows):
+```
+python train.py --config configs/bob.json --display-interval 20
 ```
 
 Multi GPU example (Linux only. *Experimental: all results in the paper were generated using a single GPU*),
 using [PyTorch DDP](https://pytorch.org/docs/stable/elastic/run.html#launcher-api)
 ```
-torchrun --nproc_per_node=4 train.py --config configs/spot.json
+torchrun --nproc_per_node=4 train.py --config configs/bob.json
 ```
 
 Below, we show the starting point and the final result. References to the right.
@@ -124,4 +119,4 @@ cd docker
 `docker run --gpus device=0 -it --rm -v /raid:/raid -it diffmod:v1 bash`
 
 - Detached docker:
-`docker run --gpus device=1 -d -v /raid:/raid -w=[path to the code] diffmod:v1 python train.py --config configs/spot.json`
+`docker run --gpus device=1 -d -v /raid:/raid -w=[path to the code] diffmod:v1 python train.py --config configs/bob.json`
