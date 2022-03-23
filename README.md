@@ -99,14 +99,14 @@ Below follows more information and instructions on how to manually install the d
 
 **NeRF synthetic dataset** Our view interpolation results use the synthetic dataset from the original [NeRF](https://github.com/bmild/nerf) paper.
 To manually install it, download the [NeRF synthetic dataset archive](https://drive.google.com/uc?export=download&id=18JxhpWD-4ZmuFKLzKlAw-w5PpzZxXOcG)
-and unzip it into the `nvdiffrec/data` folder. This is required for running any of the `nerf_*.json` configs.
+and unzip it into the `diffmodeling/data` folder. This is required for running any of the `nerf_*.json` configs.
 
 **NeRD dataset** We use datasets from the [NeRD](https://markboss.me/publication/2021-nerd/) paper, which features real-world photogrammetry and inaccurate
 (manually annotated) segmentation masks. Clone the NeRD datasets using git and rescale them to 512 x 512 pixels resolution using the script
 `scale_images.py`. This is required for running any of the `nerd_*.json` configs.
 ```
 activate dmodel
-cd nvdiffrec/data/nerd
+cd diffmodeling/data/nerd
 git clone https://github.com/vork/ethiopianHead.git
 git clone https://github.com/vork/moldGoldCape.git
 python scale_images.py
@@ -117,11 +117,11 @@ python scale_images.py
 - Build docker image.
 ```
 cd docker
-./make_image.sh nvdiffrec:v1
+./make_image.sh diffmod:v1
 ```
 
 - Start an interactive docker container:
-`docker run --gpus device=0 -it --rm -v /raid:/raid -it nvdiffrec:v1 bash`
+`docker run --gpus device=0 -it --rm -v /raid:/raid -it diffmod:v1 bash`
 
 - Detached docker:
-`docker run --gpus device=1 -d -v /raid:/raid -w=[path to the code] nvdiffrec:v1 python train.py --config configs/spot.json`
+`docker run --gpus device=1 -d -v /raid:/raid -w=[path to the code] diffmod:v1 python train.py --config configs/spot.json`
