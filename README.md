@@ -81,8 +81,8 @@ Included examples
 
 # Datasets
 
-We additionally include configs (`nerf_*.json`, `nerd_*.json`)  to reproduce the main results of the paper. We rely on third party datasets, which
-are courtesy of their respective authors, and release additional scenes used in our supplemental material. Please note
+We additionally include configs (`nerf_*.json`, `nerd_*.json`) to reproduce the main results of the paper. We rely on third party datasets, which
+are courtesy of their respective authors. Please note
 that individual licenses apply to each dataset. To automatically download and pre-process all datasets, run the 
 `download_datasets.py` script:
 ```
