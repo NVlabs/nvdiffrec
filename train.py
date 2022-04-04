@@ -11,7 +11,6 @@ import os
 import time
 import argparse
 import json
-import itertools
 
 import numpy as np
 import torch
@@ -365,11 +364,19 @@ def optimize_mesh(
     img_loss_vec = []
     reg_loss_vec = []
     iter_dur_vec = []
-    v_it = 0
 
     dataloader_train    = torch.utils.data.DataLoader(dataset_train, batch_size=FLAGS.batch, collate_fn=dataset_train.collate, shuffle=True)
     dataloader_validate = torch.utils.data.DataLoader(dataset_validate, batch_size=1, collate_fn=dataset_train.collate)
-    v_it = itertools.cycle(dataloader_validate)
+
+    def cycle(iterable):
+        iterator = iter(iterable)
+        while True:
+            try:
+                yield next(iterator)
+            except StopIteration:
+                iterator = iter(iterable)
+
+    v_it = cycle(dataloader_validate)
 
     for it, target in enumerate(dataloader_train):
 
