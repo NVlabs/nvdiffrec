@@ -30,6 +30,7 @@ class DLMesh(torch.nn.Module):
         self.mesh.v_pos = torch.nn.Parameter(self.mesh.v_pos, requires_grad=True)
         self.register_parameter('vertex_pos', self.mesh.v_pos)
 
+    @torch.no_grad()
     def getAABB(self):
         return mesh.aabb(self.mesh)
 

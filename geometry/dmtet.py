@@ -189,6 +189,7 @@ class DMTetGeometry(torch.nn.Module):
             all_edges_sorted = torch.sort(all_edges, dim=1)[0]
             self.all_edges = torch.unique(all_edges_sorted, dim=0)
 
+    @torch.no_grad()
     def getAABB(self):
         return torch.min(self.verts, dim=0).values, torch.max(self.verts, dim=0).values
 
