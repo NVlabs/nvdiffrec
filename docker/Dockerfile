@@ -7,7 +7,7 @@
 # without an express license agreement from NVIDIA CORPORATION or 
 # its affiliates is strictly prohibited.
 
-ARG BASE_IMAGE=nvcr.io/nvidia/pytorch:22.01-py3
+ARG BASE_IMAGE=nvcr.io/nvidia/pytorch:22.07-py3
 FROM $BASE_IMAGE
 
 RUN apt-get update -yq --fix-missing \
@@ -37,11 +37,11 @@ ENV PYOPENGL_PLATFORM egl
 
 COPY 10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
+# additional libraries
+RUN pip install ninja imageio imageio-ffmpeg xatlas gdown
+
 # install nvdiffrast
 RUN pip install git+https://github.com/NVlabs/nvdiffrast/
-
-# additional libraries
-RUN pip install imageio imageio-ffmpeg xatlas gdown
 
 # HDR image support
 RUN imageio_download_bin freeimage

@@ -27,15 +27,15 @@ Tested in Anaconda3 with Python 3.9 and PyTorch 1.10
 Install the [Cuda toolkit](https://developer.nvidia.com/cuda-toolkit) (required to build the PyTorch extensions).
 We support Cuda 11.3 and above.
 Pick the appropriate version of PyTorch compatible with the installed Cuda toolkit.
-Below is an example with Cuda 11.3
+Below is an example with Cuda 11.6
 
 ```
 conda create -n dmodel python=3.9
 activate dmodel
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+conda install pytorch torchvision torchaudio cudatoolkit=11.6 -c pytorch -c conda-forge
 pip install ninja imageio PyOpenGL glfw xatlas gdown
 pip install git+https://github.com/NVlabs/nvdiffrast/
-pip install --global-option="--no-networks" git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+pip install --global-option="--no-networks" git+https://github.com/NVlabs/tiny-cuda-nn#subdirectory=bindings/torch
 imageio_download_bin freeimage
 ```
 
