@@ -602,8 +602,7 @@ if __name__ == "__main__":
 
         # Free temporaries / cached memory 
         torch.cuda.empty_cache()
-        if os.name == 'posix':
-            mat['kd_ks_normal'].cleanup()
+        mat['kd_ks_normal'].cleanup()
         del mat['kd_ks_normal']
 
         lgt = lgt.clone()
