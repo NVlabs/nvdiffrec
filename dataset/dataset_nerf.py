@@ -64,6 +64,7 @@ class DatasetNERF(Dataset):
         # Load image data and modelview matrix
         img    = _load_img(os.path.join(self.base_dir, cfg['frames'][idx]['file_path']))
         mv     = torch.linalg.inv(torch.tensor(cfg['frames'][idx]['transform_matrix'], dtype=torch.float32))
+        mv     = mv @ util.rotate_x(-np.pi / 2)
         campos = torch.linalg.inv(mv)[:3, 3]
         mvp    = proj @ mv
 
