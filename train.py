@@ -86,6 +86,9 @@ def prepare_batch(target, bg_type='black'):
     target['img'] = target['img'].cuda()
     target['background'] = background
 
+    print(target['img'])
+    print(target['background'])
+
     target['img'] = torch.cat((torch.lerp(background, target['img'][..., 0:3], target['img'][..., 3:4]), target['img'][..., 3:4]), dim=-1)
 
     return target
@@ -265,9 +268,6 @@ def validate(glctx, geometry, opt_material, lgt, dataset_validate, out_dir, FLAG
         print("%1.8f, %2.3f" % (avg_mse, avg_psnr))
     return avg_psnr
 
-###############################################################################
-# Main shape fitter function / optimization loop
-###############################################################################
 
 class Trainer(torch.nn.Module):
     def __init__(self, glctx, geometry, lgt, mat, optimize_geometry, optimize_light, image_loss_fn, FLAGS):
@@ -326,10 +326,6 @@ def optimize_mesh(
         if iter < warmup_iter:
             return iter / warmup_iter 
         return max(0.0, 10**(-(iter - warmup_iter)*0.0002)) # Exponential falloff from [1.0, 0.1] over 5k epochs.    
-
-    # ==============================================================================================
-    #  Image loss
-    # ==============================================================================================
     image_loss_fn = createLoss(FLAGS)
 
     trainer_noddp = Trainer(glctx, geometry, lgt, opt_material, optimize_geometry, optimize_light, image_loss_fn, FLAGS)
@@ -356,10 +352,6 @@ def optimize_mesh(
 
         optimizer = torch.optim.Adam(trainer_noddp.params, lr=learning_rate_mat)
         scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda x: lr_schedule(x, 0.9)) 
-
-    # ==============================================================================================
-    #  Training loop
-    # ==============================================================================================
     img_cnt = 0
     img_loss_vec = []
     reg_loss_vec = []
@@ -380,14 +372,8 @@ def optimize_mesh(
 
     for it, target in enumerate(dataloader_train):
 
-        # Mix randomized background into dataset image
         target = prepare_batch(target, 'random')
 
-        # ==============================================================================================
-        #  Display / save outputs. Do it before training so we get initial meshes
-        # ==============================================================================================
-
-        # Show/save image before training step (want to get correct rendering of input)
         if FLAGS.local_rank == 0:
             display_image = FLAGS.display_interval and (it % FLAGS.display_interval == 0)
             save_image = FLAGS.save_interval and (it % FLAGS.save_interval == 0)
@@ -401,30 +387,15 @@ def optimize_mesh(
                     img_cnt = img_cnt+1
 
         iter_start_time = time.time()
-
-        # ==============================================================================================
-        #  Zero gradients
-        # ==============================================================================================
         optimizer.zero_grad()
         if optimize_geometry:
-            optimizer_mesh.zero_grad()
 
-        # ==============================================================================================
-        #  Training
-        # ==============================================================================================
         img_loss, reg_loss = trainer(target, it)
 
-        # ==============================================================================================
-        #  Final loss
-        # ==============================================================================================
         total_loss = img_loss + reg_loss
 
         img_loss_vec.append(img_loss.item())
-        reg_loss_vec.append(reg_loss.item())
 
-        # ==============================================================================================
-        #  Backpropagate
-        # ==============================================================================================
         total_loss.backward()
         if hasattr(lgt, 'base') and lgt.base.grad is not None and optimize_light:
             lgt.base.grad *= 64
@@ -438,9 +409,6 @@ def optimize_mesh(
             optimizer_mesh.step()
             scheduler_mesh.step()
 
-        # ==============================================================================================
-        #  Clamp trainables to reasonable range
-        # ==============================================================================================
         with torch.no_grad():
             if 'kd' in opt_material:
                 opt_material['kd'].clamp_()
@@ -454,10 +422,6 @@ def optimize_mesh(
 
         torch.cuda.current_stream().synchronize()
         iter_dur_vec.append(time.time() - iter_start_time)
-
-        # ==============================================================================================
-        #  Logging
-        # ==============================================================================================
         if it % log_interval == 0 and FLAGS.local_rank == 0:
             img_loss_avg = np.mean(np.asarray(img_loss_vec[-log_interval:]))
             reg_loss_avg = np.mean(np.asarray(reg_loss_vec[-log_interval:]))
@@ -468,11 +432,6 @@ def optimize_mesh(
                 (it, img_loss_avg, reg_loss_avg, optimizer.param_groups[0]['lr'], iter_dur_avg*1000, util.time_to_text(remaining_time)))
 
     return geometry, opt_material
-
-#----------------------------------------------------------------------------
-# Main function.
-#----------------------------------------------------------------------------
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='nvdiffrec')
     parser.add_argument('--config', type=str, default=None, help='Config file')
@@ -554,10 +513,6 @@ if __name__ == "__main__":
     os.makedirs(FLAGS.out_dir, exist_ok=True)
 
     glctx = dr.RasterizeGLContext()
-
-    # ==============================================================================================
-    #  Create data pipeline
-    # ==============================================================================================
     if os.path.splitext(FLAGS.ref_mesh)[1] == '.obj':
         ref_mesh         = mesh.load_mesh(FLAGS.ref_mesh, FLAGS.mtl_override)
         dataset_train    = DatasetMesh(ref_mesh, glctx, RADIUS, FLAGS, validate=False)
@@ -569,63 +524,34 @@ if __name__ == "__main__":
         elif os.path.isfile(os.path.join(FLAGS.ref_mesh, 'transforms_train.json')):
             dataset_train    = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_train.json'), FLAGS, examples=(FLAGS.iter+1)*FLAGS.batch)
             dataset_validate = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_test.json'), FLAGS)
-
-    # ==============================================================================================
-    #  Create env light with trainable parameters
-    # ==============================================================================================
-    
     if FLAGS.learn_light:
         lgt = light.create_trainable_env_rnd(512, scale=0.0, bias=0.5)
     else:
         lgt = light.load_env(FLAGS.envmap, scale=FLAGS.env_scale)
 
     if FLAGS.base_mesh is None:
-        # ==============================================================================================
-        #  If no initial guess, use DMtets to create geometry
-        # ==============================================================================================
-
-        # Setup geometry for optimization
         geometry = DMTetGeometry(FLAGS.dmtet_grid, FLAGS.mesh_scale, FLAGS)
-
-        # Setup textures, make initial guess from reference if possible
         mat = initial_guess_material(geometry, True, FLAGS)
-    
-        # Run optimization
         geometry, mat = optimize_mesh(glctx, geometry, mat, lgt, dataset_train, dataset_validate, 
                         FLAGS, pass_idx=0, pass_name="dmtet_pass1", optimize_light=FLAGS.learn_light)
 
         if FLAGS.local_rank == 0 and FLAGS.validate:
             validate(glctx, geometry, mat, lgt, dataset_validate, os.path.join(FLAGS.out_dir, "dmtet_validate"), FLAGS)
-
-        # Create textured mesh from result
         base_mesh = xatlas_uvmap(glctx, geometry, mat, FLAGS)
-
-        # Free temporaries / cached memory 
         torch.cuda.empty_cache()
         mat['kd_ks_normal'].cleanup()
         del mat['kd_ks_normal']
-
         lgt = lgt.clone()
         geometry = DLMesh(base_mesh, FLAGS)
 
         if FLAGS.local_rank == 0:
-            # Dump mesh for debugging.
             os.makedirs(os.path.join(FLAGS.out_dir, "dmtet_mesh"), exist_ok=True)
             obj.write_obj(os.path.join(FLAGS.out_dir, "dmtet_mesh/"), base_mesh)
             light.save_env_map(os.path.join(FLAGS.out_dir, "dmtet_mesh/probe.hdr"), lgt)
-
-        # ==============================================================================================
-        #  Pass 2: Train with fixed topology (mesh)
-        # ==============================================================================================
         geometry, mat = optimize_mesh(glctx, geometry, base_mesh.material, lgt, dataset_train, dataset_validate, FLAGS, 
                     pass_idx=1, pass_name="mesh_pass", warmup_iter=100, optimize_light=FLAGS.learn_light and not FLAGS.lock_light, 
                     optimize_geometry=not FLAGS.lock_pos)
     else:
-        # ==============================================================================================
-        #  Train with fixed topology (mesh)
-        # ==============================================================================================
-
-        # Load initial guess mesh from file
         base_mesh = mesh.load_mesh(FLAGS.base_mesh)
         geometry = DLMesh(base_mesh, FLAGS)
         
@@ -633,20 +559,10 @@ if __name__ == "__main__":
 
         geometry, mat = optimize_mesh(glctx, geometry, mat, lgt, dataset_train, dataset_validate, FLAGS, pass_idx=0, pass_name="mesh_pass", 
                                         warmup_iter=100, optimize_light=not FLAGS.lock_light, optimize_geometry=not FLAGS.lock_pos)
-
-    # ==============================================================================================
-    #  Validate
-    # ==============================================================================================
     if FLAGS.validate and FLAGS.local_rank == 0:
         validate(glctx, geometry, mat, lgt, dataset_validate, os.path.join(FLAGS.out_dir, "validate"), FLAGS)
-
-    # ==============================================================================================
-    #  Dump output
-    # ==============================================================================================
     if FLAGS.local_rank == 0:
         final_mesh = geometry.getMesh(mat)
         os.makedirs(os.path.join(FLAGS.out_dir, "mesh"), exist_ok=True)
         obj.write_obj(os.path.join(FLAGS.out_dir, "mesh/"), final_mesh)
         light.save_env_map(os.path.join(FLAGS.out_dir, "mesh/probe.hdr"), lgt)
-
-#----------------------------------------------------------------------------
