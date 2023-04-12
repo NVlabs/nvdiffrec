@@ -509,7 +509,7 @@ if __name__ == "__main__":
     FLAGS.lock_pos            = False                    # Disable vertex position optimization in the second pass
     FLAGS.sdf_regularizer     = 0.2                      # Weight for sdf regularizer (see paper for details)
     FLAGS.laplace             = "relative"               # Mesh Laplacian ["absolute", "relative"]
-    FLAGS.laplace_scale       = 10000.0                  # Weight for sdf regularizer. Default is relative with large weight
+    FLAGS.laplace_scale       = 10000.0                  # Weight for Laplacian regularizer. Default is relative with large weight
     FLAGS.pre_load            = True                     # Pre-load entire dataset into memory for faster training
     FLAGS.kd_min              = [ 0.0,  0.0,  0.0,  0.0] # Limits for kd
     FLAGS.kd_max              = [ 1.0,  1.0,  1.0,  1.0]
