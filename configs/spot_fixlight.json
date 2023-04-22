@@ -11,6 +11,6 @@
     "envmap": "data/irrmaps/aerodynamics_workshop_2k.hdr",
     "background": "white",
     "validate" : false,
-    "learn_light" : false,
+    "learn_lighting" : false,
     "out_dir": "spot"
 }
