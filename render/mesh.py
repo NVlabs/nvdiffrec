@@ -210,7 +210,6 @@ def compute_tangents(imesh):
         vn_idx[i] = imesh.t_nrm_idx[:, i]
 
     tangents = torch.zeros_like(imesh.v_nrm)
-    tansum   = torch.zeros_like(imesh.v_nrm)
 
     # Compute tangent space for each triangle
     uve1 = tex[1] - tex[0]
@@ -228,8 +227,6 @@ def compute_tangents(imesh):
     for i in range(0,3):
         idx = vn_idx[i][:, None].repeat(1,3)
         tangents.scatter_add_(0, idx, tang)                # tangents[n_i] = tangents[n_i] + tang
-        tansum.scatter_add_(0, idx, torch.ones_like(tang)) # tansum[n_i] = tansum[n_i] + 1
-    tangents = tangents / tansum
 
     # Normalize and make sure tangent is perpendicular to normal
     tangents = util.safe_normalize(tangents)

@@ -25,6 +25,7 @@ from dataset.dataset_llff import DatasetLLFF
 # Import topology / geometry trainers
 from geometry.dmtet import DMTetGeometry
 from geometry.dlmesh import DLMesh
+from geometry.flexicubes_geo import FlexiCubesGeometry
 
 import render.renderutils as ru
 from render import obj
@@ -333,6 +334,10 @@ def optimize_mesh(
     image_loss_fn = createLoss(FLAGS)
 
     trainer_noddp = Trainer(glctx, geometry, lgt, opt_material, optimize_geometry, optimize_light, image_loss_fn, FLAGS)
+    if FLAGS.isosurface == 'flexicubes':
+        betas = (0.7, 0.9)
+    else:
+        betas = (0.9, 0.999)
 
     if FLAGS.multi_gpu: 
         # Multi GPU training mode
@@ -342,7 +347,7 @@ def optimize_mesh(
         trainer = DDP(trainer_noddp)
         trainer.train()
         if optimize_geometry:
-            optimizer_mesh = apex.optimizers.FusedAdam(trainer_noddp.geo_params, lr=learning_rate_pos)
+            optimizer_mesh = apex.optimizers.FusedAdam(trainer_noddp.geo_params, lr=learning_rate_pos, betas=betas)
             scheduler_mesh = torch.optim.lr_scheduler.LambdaLR(optimizer_mesh, lr_lambda=lambda x: lr_schedule(x, 0.9)) 
 
         optimizer = apex.optimizers.FusedAdam(trainer_noddp.params, lr=learning_rate_mat)
@@ -351,7 +356,7 @@ def optimize_mesh(
         # Single GPU training mode
         trainer = trainer_noddp
         if optimize_geometry:
-            optimizer_mesh = torch.optim.Adam(trainer_noddp.geo_params, lr=learning_rate_pos)
+            optimizer_mesh = torch.optim.Adam(trainer_noddp.geo_params, lr=learning_rate_pos, betas=betas)
             scheduler_mesh = torch.optim.lr_scheduler.LambdaLR(optimizer_mesh, lr_lambda=lambda x: lr_schedule(x, 0.9)) 
 
         optimizer = torch.optim.Adam(trainer_noddp.params, lr=learning_rate_mat)
@@ -495,6 +500,7 @@ if __name__ == "__main__":
     parser.add_argument('-rm', '--ref_mesh', type=str)
     parser.add_argument('-bm', '--base-mesh', type=str, default=None)
     parser.add_argument('--validate', type=bool, default=True)
+    parser.add_argument('--isosurface', default='dmtet', choices=['dmtet', 'flexicubes'])
     
     FLAGS = parser.parse_args()
 
@@ -585,7 +591,12 @@ if __name__ == "__main__":
         # ==============================================================================================
 
         # Setup geometry for optimization
-        geometry = DMTetGeometry(FLAGS.dmtet_grid, FLAGS.mesh_scale, FLAGS)
+        if FLAGS.isosurface == 'flexicubes':
+            geometry = FlexiCubesGeometry(FLAGS.dmtet_grid, FLAGS.mesh_scale, FLAGS)
+        elif FLAGS.isosurface == 'dmtet':
+            geometry = DMTetGeometry(FLAGS.dmtet_grid, FLAGS.mesh_scale, FLAGS)
+        else: 
+            assert False, "Invalid isosurfacing %s" % FLAGS.isosurface
 
         # Setup textures, make initial guess from reference if possible
         mat = initial_guess_material(geometry, True, FLAGS)

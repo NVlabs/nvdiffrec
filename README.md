@@ -8,6 +8,10 @@ as described in the paper
 
 For differentiable marching tetrahedons, we have adapted code from NVIDIA's [Kaolin: A Pytorch Library for Accelerating 3D Deep Learning Research](https://github.com/NVIDIAGameWorks/kaolin).
 
+# News
+
+- **2023-09-15** : We added support for the [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/) isosurfacing technique. Please see the config `configs/bob_flexi.json` for a usage example, and refer to the [FlexiCubes documentation](https://github.com/nv-tlabs/FlexiCubes) for details.
+
 # Licenses
 
 Copyright &copy; 2022, NVIDIA Corporation. All rights reserved.
