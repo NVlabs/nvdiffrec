@@ -16,7 +16,6 @@ import renderutils as ru
 
 BATCH = 8
 RES = 1024
-DTYPE = torch.float32
 
 torch.manual_seed(0)
 
@@ -36,11 +35,11 @@ def relative_loss(name, ref, cuda):
 	print(name, torch.max(torch.abs(ref - cuda) / torch.abs(ref)).item())
 
 def test_xfm_points():
-	points_cuda = torch.rand(1, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	points_cuda = torch.rand(1, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	points_ref = points_cuda.clone().detach().requires_grad_(True)
-	mtx_cuda = torch.rand(BATCH, 4, 4, dtype=DTYPE, device='cuda', requires_grad=False)
+	mtx_cuda = torch.rand(BATCH, 4, 4, dtype=torch.float32, device='cuda', requires_grad=False)
 	mtx_ref = mtx_cuda.clone().detach().requires_grad_(True)
-	target = torch.rand(BATCH, RES, 4, dtype=DTYPE, device='cuda', requires_grad=True)
+	target = torch.rand(BATCH, RES, 4, dtype=torch.float32, device='cuda', requires_grad=True)
 
 	ref_out = ru.xfm_points(points_ref, mtx_ref, use_python=True)
 	ref_loss = torch.nn.MSELoss()(ref_out, target)
@@ -56,13 +55,13 @@ def test_xfm_points():
 	relative_loss("points:", points_ref.grad, points_cuda.grad)
 
 def test_xfm_vectors():
-	points_cuda = torch.rand(1, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	points_cuda = torch.rand(1, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	points_ref = points_cuda.clone().detach().requires_grad_(True)
 	points_cuda_p = points_cuda.clone().detach().requires_grad_(True)
 	points_ref_p = points_cuda.clone().detach().requires_grad_(True)
-	mtx_cuda = torch.rand(BATCH, 4, 4, dtype=DTYPE, device='cuda', requires_grad=False)
+	mtx_cuda = torch.rand(BATCH, 4, 4, dtype=torch.float32, device='cuda', requires_grad=False)
 	mtx_ref = mtx_cuda.clone().detach().requires_grad_(True)
-	target = torch.rand(BATCH, RES, 4, dtype=DTYPE, device='cuda', requires_grad=True)
+	target = torch.rand(BATCH, RES, 4, dtype=torch.float32, device='cuda', requires_grad=True)
 
 	ref_out = ru.xfm_vectors(points_ref.contiguous(), mtx_ref, use_python=True)
 	ref_loss = torch.nn.MSELoss()(ref_out, target[..., 0:3])

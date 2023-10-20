@@ -14,20 +14,18 @@ import sys
 sys.path.insert(0, os.path.join(sys.path[0], '../..'))
 import renderutils as ru
 
-DTYPE=torch.float32
-
 def test_bsdf(BATCH, RES, ITR):
-	kd_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	kd_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	kd_ref = kd_cuda.clone().detach().requires_grad_(True)
-	arm_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	arm_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	arm_ref = arm_cuda.clone().detach().requires_grad_(True)
-	pos_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	pos_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	pos_ref = pos_cuda.clone().detach().requires_grad_(True)
-	nrm_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	nrm_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	nrm_ref = nrm_cuda.clone().detach().requires_grad_(True)
-	view_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	view_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	view_ref = view_cuda.clone().detach().requires_grad_(True)
-	light_cuda = torch.rand(BATCH, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	light_cuda = torch.rand(BATCH, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	light_ref = light_cuda.clone().detach().requires_grad_(True)
 	target = torch.rand(BATCH, RES, RES, 3, device='cuda')
 
@@ -50,7 +48,7 @@ def test_bsdf(BATCH, RES, ITR):
 		cuda = ru.pbr_bsdf(kd_cuda, arm_cuda, pos_cuda, nrm_cuda, view_cuda, light_cuda)
 	end.record()
 	torch.cuda.synchronize()
-	print("Pbr BSDF cuda:", start.elapsed_time(end))
+	print("Pbr BSDF Slang:", start.elapsed_time(end))
 
 test_bsdf(1, 512, 1000)
 test_bsdf(16, 512, 1000)

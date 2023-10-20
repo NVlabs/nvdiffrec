@@ -1,4 +1,4 @@
-# nvdiffrec
+# nvdiffrec : slang version 
 
 ![Teaser image](https://nvlabs.github.io/nvdiffrec/assets/system.JPG "Teaser image")
 
@@ -8,7 +8,14 @@ as described in the paper
 
 For differentiable marching tetrahedons, we have adapted code from NVIDIA's [Kaolin: A Pytorch Library for Accelerating 3D Deep Learning Research](https://github.com/NVIDIAGameWorks/kaolin).
 
+<span style="color: red;">**Note:**</span> This is a special slangpy branch of nvdiffrec. To recreate the results of the original paper please refer to the [main branch](https://github.com/NVlabs/nvdiffrec).
+
 # News
+
+- **2023-10-20** : We added a version of the renderutils library written in [slangpy](https://shader-slang.com/slang/user-guide/a1-02-slangpy.html)
+to leverage the autodiff capabilities of slang instead of CUDA extensions with manually crafted forward and backward passes.
+This simplifies the code substantially, with the same runtime performance as before. This version is available in the `slang` branch of this repo.
+Please refer to Slang's automatic differentiation [documentation](https://shader-slang.com/slang/user-guide/07-autodiff.html) for details.
 
 - **2023-09-15** : We added support for the [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/) isosurfacing technique. Please see the config `configs/bob_flexi.json` for a usage example, and refer to the [FlexiCubes documentation](https://github.com/nv-tlabs/FlexiCubes) for details.
 
@@ -24,20 +31,20 @@ For business inquiries, please visit our website and submit the form: [NVIDIA Re
 
 Requires Python 3.6+, VS2019+, Cuda 11.3+ and PyTorch 1.10+
 
-Tested in Anaconda3 with Python 3.9 and PyTorch 1.10
+Tested in Anaconda3 with Python 3.10 and PyTorch 2.0
 
 ## One time setup (Windows)
 
 Install the [Cuda toolkit](https://developer.nvidia.com/cuda-toolkit) (required to build the PyTorch extensions).
 We support Cuda 11.3 and above.
 Pick the appropriate version of PyTorch compatible with the installed Cuda toolkit.
-Below is an example with Cuda 11.6
+Below is an example with Cuda 11.8
 
 ```
-conda create -n dmodel python=3.9
+conda create -n dmodel python=3.10
 activate dmodel
-conda install pytorch torchvision torchaudio cudatoolkit=11.6 -c pytorch -c conda-forge
-pip install ninja imageio PyOpenGL glfw xatlas gdown
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install ninja imageio PyOpenGL glfw xatlas gdown slangpy
 pip install git+https://github.com/NVlabs/nvdiffrast/
 pip install --global-option="--no-networks" git+https://github.com/NVlabs/tiny-cuda-nn#subdirectory=bindings/torch
 imageio_download_bin freeimage

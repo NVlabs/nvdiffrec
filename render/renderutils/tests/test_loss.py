@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.join(sys.path[0], '../..'))
 import renderutils as ru
 
 RES = 8
-DTYPE = torch.float32
 
 def tonemap_srgb(f):
     return torch.where(f > 0.0031308, torch.pow(torch.clamp(f, min=0.0031308), 1.0/2.4)*1.055 - 0.055, 12.92*f)
@@ -33,9 +32,9 @@ def relative_loss(name, ref, cuda):
 	print(name, torch.max(torch.abs(ref - cuda) / torch.abs(ref + 1e-7)).item())
 
 def test_loss(loss, tonemapper):
-	img_cuda = torch.rand(1, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	img_cuda = torch.rand(1, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	img_ref = img_cuda.clone().detach().requires_grad_(True)
-	target_cuda = torch.rand(1, RES, RES, 3, dtype=DTYPE, device='cuda', requires_grad=True)
+	target_cuda = torch.rand(1, RES, RES, 3, dtype=torch.float32, device='cuda', requires_grad=True)
 	target_ref = target_cuda.clone().detach().requires_grad_(True)
 
 	ref_loss = ru.image_loss(img_ref, target_ref, loss=loss, tonemapper=tonemapper, use_python=True)

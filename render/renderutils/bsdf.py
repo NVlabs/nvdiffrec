@@ -133,7 +133,7 @@ def bsdf_pbr_specular(col, nrm, wo, wi, alpha, min_roughness=0.08):
     frontfacing = (woDotN > specular_epsilon) & (wiDotN > specular_epsilon)
     return torch.where(frontfacing, w, torch.zeros_like(w))
 
-def bsdf_pbr(kd, arm, pos, nrm, view_pos, light_pos, min_roughness, BSDF):
+def bsdf_pbr(kd, arm, pos, nrm, view_pos, light_pos, min_roughness):
     wo = _safe_normalize(view_pos - pos)
     wi = _safe_normalize(light_pos - pos)
 
@@ -143,9 +143,6 @@ def bsdf_pbr(kd, arm, pos, nrm, view_pos, light_pos, min_roughness, BSDF):
     ks = (0.04 * (1.0 - metallic) + kd * metallic) * (1 - spec_str)
     kd = kd * (1.0 - metallic)
 
-    if BSDF == 0:
-        diffuse = kd * bsdf_lambert(nrm, wi)
-    else:
-        diffuse = kd * bsdf_frostbite(nrm, wi, wo, roughness)
+    diffuse = kd * bsdf_lambert(nrm, wi)
     specular = bsdf_pbr_specular(ks, nrm, wo, wi, roughness*roughness, min_roughness=min_roughness)
     return diffuse + specular
