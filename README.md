@@ -15,9 +15,23 @@ For differentiable marching tetrahedons, we have adapted code from NVIDIA's [Kao
 - **2023-10-20** : We added a version of the renderutils library written in [slangpy](https://shader-slang.com/slang/user-guide/a1-02-slangpy.html)
 to leverage the autodiff capabilities of slang instead of CUDA extensions with manually crafted forward and backward passes.
 This simplifies the code substantially, with the same runtime performance as before. This version is available in the `slang` branch of this repo.
-Please refer to Slang's automatic differentiation [documentation](https://shader-slang.com/slang/user-guide/07-autodiff.html) for details.
+Please refer to the technical paper: [SLANG.D: Fast, Modular and Differentiable Shader Programming](https://research.nvidia.com/labs/rtr/publication/bangaru2023slangd/) and Slang's automatic differentiation [documentation](https://shader-slang.com/slang/user-guide/07-autodiff.html) for details. 
 
 - **2023-09-15** : We added support for the [FlexiCubes](https://research.nvidia.com/labs/toronto-ai/flexicubes/) isosurfacing technique. Please see the config `configs/bob_flexi.json` for a usage example, and refer to the [FlexiCubes documentation](https://github.com/nv-tlabs/FlexiCubes) for details.
+
+# Citation
+
+```
+@inproceedings{Munkberg_2022_CVPR,
+    author    = {Munkberg, Jacob and Hasselgren, Jon and Shen, Tianchang and Gao, Jun and Chen, Wenzheng 
+                    and Evans, Alex and M\"uller, Thomas and Fidler, Sanja},
+    title     = "{Extracting Triangular 3D Models, Materials, and Lighting From Images}",
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {8280-8290}
+}
+```
 
 # Licenses
 
