@@ -52,7 +52,7 @@ class DatasetMesh(Dataset):
 
         # Smooth rotation for display.
         ang    = (itr / 50) * np.pi * 2
-        mv     = util.translate(0, 0, -self.cam_radius) @ (util.rotate_x(-0.4) @ util.rotate_y(ang))
+        mv     = util.translate(0, 0, -self.cam_radius) @ (util.rotate_x(0.4) @ util.rotate_y(ang))
         mvp    = proj_mtx @ mv
         campos = torch.linalg.inv(mv)[:3, 3]
 

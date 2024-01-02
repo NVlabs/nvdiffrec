@@ -224,10 +224,10 @@ def translate(x, y, z, device=None):
 
 def rotate_x(a, device=None):
     s, c = np.sin(a), np.cos(a)
-    return torch.tensor([[1,  0, 0, 0], 
-                         [0,  c, s, 0], 
-                         [0, -s, c, 0], 
-                         [0,  0, 0, 1]], dtype=torch.float32, device=device)
+    return torch.tensor([[1, 0, 0, 0], 
+                         [0, c,-s, 0], 
+                         [0, s, c, 0], 
+                         [0, 0, 0, 1]], dtype=torch.float32, device=device)
 
 def rotate_y(a, device=None):
     s, c = np.sin(a), np.cos(a)
