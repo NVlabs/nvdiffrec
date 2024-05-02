@@ -13,6 +13,8 @@ import utils;
 // Cuda kernels
 /////////////////////////////////////////////////////////////////////////////////
 
+groupshared float4x4 mtx;
+
 [CudaKernel]
 void xfm_fwd_kernel(TensorView<float3> points, TensorView<float> matrix, bool is_point, TensorView<float4> out)
 {
@@ -23,7 +25,6 @@ void xfm_fwd_kernel(TensorView<float3> points, TensorView<float> matrix, bool is
     uint px = blockIdx.x * blockDim.x + threadIdx.x;
     uint pz = blockIdx.z * blockDim.z + threadIdx.z;
 
-    groupshared float4x4 mtx;
     if (threadIdx.x < 16)
     {
         mtx[threadIdx.x % 4][threadIdx.x / 4] = matrix[uint3(pz, threadIdx.x / 4, threadIdx.x % 4)];
@@ -48,7 +49,6 @@ void xfm_bwd_kernel(TensorView<float3> points, TensorView<float> matrix, bool is
     uint px = blockIdx.x * blockDim.x + threadIdx.x;
     uint pz = blockIdx.z * blockDim.z + threadIdx.z;
 
-    groupshared float4x4 mtx;
     if (threadIdx.x < 16)
     {
         mtx[threadIdx.x % 4][threadIdx.x / 4] = matrix[uint3(pz, threadIdx.x / 4, threadIdx.x % 4)];

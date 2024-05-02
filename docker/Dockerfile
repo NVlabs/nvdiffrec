@@ -38,7 +38,7 @@ ENV PYOPENGL_PLATFORM egl
 COPY 10_nvidia.json /usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
 # additional libraries
-RUN pip install ninja imageio imageio-ffmpeg xatlas gdown slangpy
+RUN pip install ninja imageio imageio-ffmpeg xatlas gdown slangtorch
 
 # install nvdiffrast
 RUN pip install git+https://github.com/NVlabs/nvdiffrast/

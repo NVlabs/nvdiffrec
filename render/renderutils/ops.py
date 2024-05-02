@@ -8,7 +8,7 @@
 # its affiliates is strictly prohibited.
 
 import numpy as np
-import slangpy
+import slangtorch
 import os
 import sys
 import torch
@@ -20,7 +20,7 @@ from .bsdf import *
 #----------------------------------------------------------------------------
 # Shading normal setup (bump mapping + bent normals)
 
-slang_normal = slangpy.loadModule(os.path.join(os.path.dirname(__file__), "normal.slang"))
+slang_normal = slangtorch.loadModule(os.path.join(os.path.dirname(__file__), "normal.slang"))
 
 class _prepare_shading_normal_func(torch.autograd.Function):
     @staticmethod
@@ -73,7 +73,7 @@ def prepare_shading_normal(pos, view_pos, perturbed_nrm, smooth_nrm, smooth_tng,
 #----------------------------------------------------------------------------
 # Slang pbr shader
 
-slang_module = slangpy.loadModule(os.path.join(os.path.dirname(__file__), "pbr.slang")) 
+slang_module = slangtorch.loadModule(os.path.join(os.path.dirname(__file__), "pbr.slang")) 
 
 class _pbr_bsdf_slang_func(torch.autograd.Function):
     @staticmethod
@@ -117,7 +117,7 @@ def pbr_bsdf(kd, arm, pos, nrm, view_pos, light_pos, min_roughness=0.08, use_pyt
 #----------------------------------------------------------------------------
 # cubemap filter with filtering across edges
 
-slang_cubemap = slangpy.loadModule(os.path.join(os.path.dirname(__file__), "cubemap.slang"))
+slang_cubemap = slangtorch.loadModule(os.path.join(os.path.dirname(__file__), "cubemap.slang"))
 
 class _diffuse_cubemap_func(torch.autograd.Function):
     @staticmethod
@@ -207,7 +207,7 @@ def strToTonemapper(s):
     else:
         return 0 # TONEMAPPER_NONE
 
-slang_loss = slangpy.loadModule(os.path.join(os.path.dirname(__file__), "loss.slang"))
+slang_loss = slangtorch.loadModule(os.path.join(os.path.dirname(__file__), "loss.slang"))
 
 class _image_loss_func(torch.autograd.Function):
     @staticmethod
@@ -249,7 +249,7 @@ def image_loss(img, target, loss='l1', tonemapper='none', use_python=False):
 #----------------------------------------------------------------------------
 # Transform points function
 
-slang_mesh = slangpy.loadModule(os.path.join(os.path.dirname(__file__), "mesh.slang"))
+slang_mesh = slangtorch.loadModule(os.path.join(os.path.dirname(__file__), "mesh.slang"))
 class _xfm_func(torch.autograd.Function):
     @staticmethod
     def forward(ctx, points, matrix, isPoints):
