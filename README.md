@@ -8,11 +8,11 @@ as described in the paper
 
 For differentiable marching tetrahedons, we have adapted code from NVIDIA's [Kaolin: A Pytorch Library for Accelerating 3D Deep Learning Research](https://github.com/NVIDIAGameWorks/kaolin).
 
-<span style="color: red;">**Note:**</span> This is a special slangpy branch of nvdiffrec. To recreate the results of the original paper please refer to the [main branch](https://github.com/NVlabs/nvdiffrec).
+<span style="color: red;">**Note:**</span> This is a special slangtorch branch of nvdiffrec. To recreate the results of the original paper please refer to the [main branch](https://github.com/NVlabs/nvdiffrec).
 
 # News
 
-- **2023-10-20** : We added a version of the renderutils library written in [slangpy](https://shader-slang.com/slang/user-guide/a1-02-slangpy.html)
+- **2023-10-20** : We added a version of the renderutils library written in [slangtorch](https://shader-slang.com/slang/user-guide/a1-02-slangpy.html)
 to leverage the autodiff capabilities of slang instead of CUDA extensions with manually crafted forward and backward passes.
 This simplifies the code substantially, with the same runtime performance as before. This version is available in the `slang` branch of this repo.
 Please refer to the technical paper: [SLANG.D: Fast, Modular and Differentiable Shader Programming](https://research.nvidia.com/labs/rtr/publication/bangaru2023slangd/) and Slang's automatic differentiation [documentation](https://shader-slang.com/slang/user-guide/07-autodiff.html) for details. 
@@ -58,7 +58,7 @@ Below is an example with Cuda 11.8
 conda create -n dmodel python=3.10
 activate dmodel
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-pip install ninja imageio PyOpenGL glfw xatlas gdown slangpy
+pip install ninja imageio PyOpenGL glfw xatlas gdown slangtorch
 pip install git+https://github.com/NVlabs/nvdiffrast/
 pip install --global-option="--no-networks" git+https://github.com/NVlabs/tiny-cuda-nn#subdirectory=bindings/torch
 imageio_download_bin freeimage
